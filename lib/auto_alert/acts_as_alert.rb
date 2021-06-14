@@ -6,6 +6,11 @@ module AutoAlert
       # Class method to register a model as alertable
       def acts_as_alert
         belongs_to :alertable, polymorphic: true
+        validates :kind,
+          uniqueness: {
+            scope: :alertable,
+            message: ->(record, data) { "This #{record.alertable_type} already has a '#{data[:value]}' alert." },
+          }
         include AutoAlert::ActsAsAlert::LocalInstanceMethods
         extend AutoAlert::ActsAsAlert::SingletonMethods
       end
