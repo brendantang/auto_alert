@@ -18,7 +18,7 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
     assert list.reload.has_unresolved_alerts?
   end
 
-  def test_tasks_raise_alert_when_past_due_date
+  def use_an_instance_method_to_raise_and_dismiss_alerts
     assert_includes(Task.alert_kinds, :past_due)
     task = Task.create(title: "My task", done: false, due_date: Date.current - 5.day)
     assert_not task.has_unresolved_alerts?
@@ -32,5 +32,33 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
     task.reload
     assert_not task.has_unresolved_alerts?
     assert task.past_due_alert.resolved
+  end
+
+  def use_a_lambda_to_raise_and_dismiss_alerts
+    flunk
+  end
+
+  def different_conditions_to_raise_and_dismiss_an_alert
+    flunk
+  end
+
+  def test_build_alert_message_with_a_string
+    flunk
+  end
+
+  def test_build_alert_message_with_a_lambda
+    flunk
+  end
+
+  def test_build_alert_message_with_a_method_name
+    flunk
+  end
+
+  def dont_reraise_resolved_alerts_by_default
+    flunk
+  end
+
+  def allow_resolved_alerts_to_be_reraised
+    flunk
   end
 end
