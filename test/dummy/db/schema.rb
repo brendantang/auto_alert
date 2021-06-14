@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 2021_06_13_232831) do
     t.bigint "alertable_id", null: false
     t.boolean "resolved", default: false
     t.string "message"
+    t.string "kind", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["alertable_type", "alertable_id"], name: "index_alerts_on_alertable"
@@ -30,6 +31,7 @@ ActiveRecord::Schema.define(version: 2021_06_13_232831) do
     t.bigint "alertable_id", null: false
     t.boolean "resolved", default: false
     t.string "message"
+    t.integer "kind"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["alertable_type", "alertable_id"], name: "index_special_alerts_on_alertable"
