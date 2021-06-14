@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_13_222049) do
+ActiveRecord::Schema.define(version: 2021_06_13_232831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,11 +25,30 @@ ActiveRecord::Schema.define(version: 2021_06_13_222049) do
     t.index ["alertable_type", "alertable_id"], name: "index_alerts_on_alertable"
   end
 
+  create_table "special_alerts", force: :cascade do |t|
+    t.string "alertable_type", null: false
+    t.bigint "alertable_id", null: false
+    t.boolean "resolved", default: false
+    t.string "message"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["alertable_type", "alertable_id"], name: "index_special_alerts_on_alertable"
+  end
+
+  create_table "task_lists", force: :cascade do |t|
+    t.string "title"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title"
     t.date "due_date"
+    t.boolean "done"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "task_list_id"
+    t.index ["task_list_id"], name: "index_tasks_on_task_list_id"
   end
 
 end

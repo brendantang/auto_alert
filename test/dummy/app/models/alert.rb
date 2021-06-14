@@ -1,3 +1,3 @@
 class Alert < ApplicationRecord
-  belongs_to :alertable, polymorphic: true
+  acts_as_alert
 end
