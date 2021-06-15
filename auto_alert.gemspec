@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email = ["b@brendantang.net"]
   spec.homepage = "https://github.com/brendantang/auto_alert"
   spec.summary = "Automatically raise and dismiss alerts on your ActiveRecord models."
-  spec.description = "A plugin for Rails which makes it easy to specify conditions to raise or dismiss Alert records associated with your ActiveRecord models."
+  spec.description = "A plugin for Rails which makes it easy to specify conditions to raise or resolve alert records associated with your ActiveRecord models."
   spec.license = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

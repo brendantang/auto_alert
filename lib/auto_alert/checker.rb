@@ -2,12 +2,12 @@ module AutoAlert
   class Checker
     attr_reader :kind
 
-    def initialize(alert_kind, raise_condition, dismiss_condition, reraise_condition = false, message_builder)
+    def initialize(alert_kind, raise_condition, resolve_condition, reraise_condition = false, message_builder)
       @kind = alert_kind
       @raise_condition = normalize_check_condition raise_condition
-      @dismiss_condition =
-        dismiss_condition ?
-          normalize_check_condition(dismiss_condition) :
+      @resolve_condition =
+        resolve_condition ?
+          normalize_check_condition(resolve_condition) :
           ->(a) { not @raise_condition.call(a) }
       @reraise_condition = if !reraise_condition # If nil or false
           nil
@@ -30,9 +30,9 @@ module AutoAlert
           alertable.alerts.create(kind: @kind, message: message(alertable), resolved: false)
         end
 
-      # Check if alert should be dismissed
+      # Check if alert should be resolveed
       in alert, _, false
-        alert.update(resolved: true) if @dismiss_condition.call(alertable)
+        alert.update(resolved: true) if @resolve_condition.call(alertable)
 
       # Resolved alert should not be re-raised
       in alert, nil, true

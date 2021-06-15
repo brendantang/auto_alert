@@ -21,9 +21,9 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
     assert list.reload.has_unresolved_alerts?
   end
 
-  # Raise and dismiss alerts
+  # Raise and resolve alerts
 
-  def test_use_an_instance_method_to_raise_and_dismiss_alerts
+  def test_use_an_instance_method_to_raise_and_resolve_alerts
     assert_includes(Task.alert_kinds, :past_due)
     task = Task.create(title: "My task", done: false, due_date: Date.current - 5.day)
     assert_not task.has_unresolved_alerts?
@@ -39,7 +39,7 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
     assert task.past_due_alert.resolved
   end
 
-  def test_different_conditions_to_raise_and_dismiss_an_alert
+  def test_different_conditions_to_raise_and_resolve_an_alert
     order = Order.create(placed: Date.current - 10.day, shipped: false)
     assert_alert order, kind: :week_old, resolved: false
     order.update(placed: Date.current)  # This should not affect the alert

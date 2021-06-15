@@ -23,7 +23,7 @@ module AutoAlert
         unresolved_alerts.size > 0
       end
 
-      # Check if any alerts should be raised or dismissed
+      # Check if any alerts should be raised or resolveed
       def scan_for_alerts!
         self.class.alert_checkers.each do |checker|
           checker.check(self)
@@ -32,8 +32,8 @@ module AutoAlert
     end
 
     module SingletonMethods
-      def raises_alert(kind, on:, dismiss_on: nil, message: nil, reraise: false)
-        checker = AutoAlert::Checker.new(kind, on, dismiss_on, reraise, message)
+      def raises_alert(kind, on:, resolve_on: nil, message: nil, reraise: false)
+        checker = AutoAlert::Checker.new(kind, on, resolve_on, reraise, message)
         alert_checkers << checker
         define_method "#{kind}_alert" do
           alerts.find_by(kind: kind)
