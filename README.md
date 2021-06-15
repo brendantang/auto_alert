@@ -1,13 +1,18 @@
 # auto_alert
+
+
 [`auto_alert`](https://github.com/brendantang/auto_alert) provides a simple DSL to declare conditions that should raise alerts on your ActiveRecord models.
 Alerts are saved in a database table with a [polymorphic association](https://guides.rubyonrails.org/association_basics.html#polymorphic-associations) to the model which triggered their creation.
 It's possible to define different conditions to raise, resolve, and re-raise an alert.
 
 
+
 ## Quick example
+
 
 Imagine a to-do list application where tasks with a due date in the past should be flagged with an alert.
 With `auto_alert`, you can modify your Task model like so:
+
 
 ```ruby
 class Task < ApplicationRecord
@@ -23,11 +28,17 @@ class Task < ApplicationRecord
   end
 ```
 
+
 Then you can call the `scan_for_alerts!` on any task and, if `past_due_date?` returns `true`, an alert record belonging to that task will be created.
 Instances of `Task` will also have a `past_due_alert` getter method to fetch their associated `past_due` alert, if any.
 
+
+
 ## Installation
+
+
 ### Install `auto_alert`
+
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -37,11 +48,6 @@ gem 'auto_alert'
 And then execute:
 ```bash
 $ bundle
-```
-
-Or install it yourself as:
-```bash
-$ gem install auto_alert
 ```
 
 ### Create `Alert` model
@@ -77,13 +83,46 @@ end
 ```
 
 
+
 ## Usage
 
+
+Calling `acts_as_alertable` in your model definition:
+  - Allows you to use the `raises_alert` class method to declare the conditions that should raise or resolve an alert
+  - Registers that model instances have alerts
+    - Uses [polymorphic association](https://guides.rubyonrails.org/association_basics.html#polymorphic-associations), so you can use all the instance methods it provides
+    - Also creates convenience getters for each kind of alert that model can raise (i.e. `task.past_due_alert`)
+  - Provides the instance method `scan_for_alerts!`, which creates or updates alert records according to the declared `raises_alert` conditions.
+  
+  
 ### Scanning for alerts
 
 `auto_alert` makes no assumptions about when you'd like to check if alerts should be raised or resolved.
 
-### Declaring rules to raise, resolve, and re-raise alerts
+For simple use cases, it can make sense to call `scan_for_alerts!` on specific instances from your controller, or to hook into one of the ActiveRecord [callbacks](https://guides.rubyonrails.org/active_record_callbacks.html):
+```ruby
+class MyModel < ApplicationRecord
+  acts_as_alertable
+  # ...
+  after_save :scan_for_alerts!
+```
+
+For more complicated use cases, especially where alert conditions rely on factors external to the model instance itself, it can make sense to use a [job](https://guides.rubyonrails.org/active_job_basics.html) to asynchronously call `scan_for_alerts!` on big batches of records.
+
+
+### Alert records
+
+`auto_alert` assumes there is an ActiveRecord model for the table `alerts`, with at least:
+  - A polymorphic `alertable` reference (pointing to the record which triggered the alert)
+  - A boolean `resolved` attribute (indicating the alert is no longer relevant)
+  - A `kind` attribute (each alertable record has only one alert of each kind—`past_due` in the example above)
+    - Can be a text column or a Rails enumerable using a numeric column ([example](./test/dummy/app/models/special_alert.rb))
+  - A string `message` attribute describing the alert details
+  
+Instructions for creating such a model are in the Installation secion under [Create Alert model](#create-alert-model).
+
+
+### Declaring rules to raise and resolve alerts
 
 The `on` parameter to `raises_alert` can take a method name as [above](#quick-example), or a proc:
 
@@ -105,28 +144,30 @@ class Order < ApplicationRecord
     # Now changing the order date won't resolve the alert, but marking it `shipped` will.
 ```
 
+If no `resolve_on` parameter is passed, the inverse of the `on` condition is used.
+
+
+### Re-raising alerts
+
+By default, an alert which is `resolved` will not be re-raised, even if the `on` condition is met again.
+If you pass the `reraise` option `true`, the alert's `resolved` attribute will be updated to `false` every time the `on` condition is met.
+
+```ruby
+class Temperature < ApplicationRecord
+  acts_as_alertable
+  
+  raises_alert :too_cold,
+    on: ->(temp) { temp.farenheit < 32 },
+    reraise: true
+```
+
+You can also give a proc or method name to the `reraise` option to use a condition other than the initial `on` condition.
+    
+
 ### Messages
 
 Alert messages can be built using a string, a proc, or a method name.
 When an alert is re-raised, its message will be built again.
-
-
-### Alert records
-
-`auto_alert` assumes there is an ActiveRecord model for the table `alerts`, with at least:
-  - A polymorphic `alertable` reference (pointing to the record which triggered the alert)
-  - A boolean `resolved` attribute (indicating the alert is no longer relevant)
-  - A `kind` attribute (each alertable record has only one alert of each kind—`past_due` in the example above)
-    - Can be a text column or a Rails enumerable using a numeric column ([example](./test/dummy/app/models/special_alert.rb))
-  - A string `message` attribute describing the alert details
-  
-Instructions for creating such a model are in the Installation secion under [Create Alert model](#create-alert-model).
-
-
-
-
-### Dismissing alerts
-
 
 
 
