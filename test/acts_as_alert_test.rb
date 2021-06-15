@@ -17,10 +17,4 @@ class ActsAsAlertTest < ActiveSupport::TestCase
     assert_includes duplicate.errors.messages.values, ["This Task already has a 'past_due' alert."]
   end
 
-  private
-
-  def assert_class_acts_as_alert(klass)
-    record = klass.new
-    assert_respond_to record, :alertable
-  end
 end

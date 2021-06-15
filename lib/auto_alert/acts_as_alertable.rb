@@ -32,8 +32,8 @@ module AutoAlert
     end
 
     module SingletonMethods
-      def raises_alert(kind, on:, dismiss_on: nil, message: nil)
-        checker = AutoAlert::Checker.new(kind, on, dismiss_on, message)
+      def raises_alert(kind, on:, dismiss_on: nil, message: nil, reraise: false)
+        checker = AutoAlert::Checker.new(kind, on, dismiss_on, reraise, message)
         alert_checkers << checker
         define_method "#{kind}_alert" do
           alerts.find_by(kind: kind)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_13_232831) do
+ActiveRecord::Schema.define(version: 2021_06_15_165924) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,6 +24,17 @@ ActiveRecord::Schema.define(version: 2021_06_13_232831) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["alertable_type", "alertable_id"], name: "index_alerts_on_alertable"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "customer"
+    t.date "placed"
+    t.boolean "paid"
+    t.boolean "refunded"
+    t.boolean "shipped"
+    t.boolean "returned"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "special_alerts", force: :cascade do |t|

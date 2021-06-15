@@ -1,4 +1,6 @@
 class Task < ApplicationRecord
+  belongs_to :task_list, optional: true
+
   acts_as_alertable
 
   raises_alert :past_due,

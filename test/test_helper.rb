@@ -6,7 +6,7 @@ ActiveRecord::Migrator.migrations_paths = [File.expand_path("../test/dummy/db/mi
 require "rails/test_help"
 
 require "rails/test_unit/reporter"
-Rails::TestUnitReporter.executable = 'bin/test'
+Rails::TestUnitReporter.executable = "bin/test"
 
 # Load fixtures from the engine
 if ActiveSupport::TestCase.respond_to?(:fixture_path=)
@@ -14,4 +14,9 @@ if ActiveSupport::TestCase.respond_to?(:fixture_path=)
   ActionDispatch::IntegrationTest.fixture_path = ActiveSupport::TestCase.fixture_path
   ActiveSupport::TestCase.file_fixture_path = ActiveSupport::TestCase.fixture_path + "/files"
   ActiveSupport::TestCase.fixtures :all
+end
+
+def assert_class_acts_as_alert(klass)
+  record = klass.new
+  assert_respond_to record, :alertable
 end

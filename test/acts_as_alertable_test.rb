@@ -40,40 +40,81 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
   end
 
   def test_different_conditions_to_raise_and_dismiss_an_alert
-    task = Task.create(title: "foo", due_date: Date.current + 1.week)
-    assert_not task.has_unresolved_alerts?
-    task.scan_for_alerts!
-    assert task.has_unresolved_alerts?
-    assert_not task.alerts.where(kind: :short_title).empty?
+    order = Order.create(placed: Date.current - 10.day, shipped: false)
+    assert_alert order, kind: :week_old, resolved: false
+    order.update(placed: Date.current)  # This should not affect the alert
+    assert_alert order, kind: :week_old, resolved: false
+    order.update(shipped: true)
+    assert_alert order, kind: :week_old, resolved: true
   end
 
   def test_use_a_lambda_to_raise_an_alert
     task_list = TaskList.create
-    task_list.scan_for_alerts!
-    assert_not task_list.alerts.where(kind: :no_tasks).empty?
+    assert_alert task_list, kind: :no_tasks
   end
 
   # Message builders
 
-  def test_build_alert_message_with_a_string
-    flunk
+  def test_build_alert_message_from_a_string
   end
 
-  def test_build_alert_message_with_a_lambda
-    flunk
+  def test_build_alert_message_from_a_lambda
   end
 
-  def test_build_alert_message_with_a_method_name
-    flunk
+  def test_build_alert_message_from_a_method_name
   end
 
   # Determine whether resolved alerts should be re-raised
 
   def test_dont_reraise_resolved_alerts_by_default
-    flunk
+    task = Task.create(title: "My task", done: false, due_date: Date.current - 5.day)
+    assert_alert task, kind: :past_due, resolved: false
+    task.update(done: true)
+    assert_alert task, kind: :past_due, resolved: true
+
+    # Past due alert should not re-raise even though its trigger condition is met again
+    task.update(done: false)
+    assert_alert task, kind: :past_due, resolved: true
   end
 
   def test_allow_resolved_alerts_to_be_reraised
-    flunk
+    task_list = TaskList.create
+    assert_alert task_list, kind: :no_tasks, resolved: false
+    task = Task.create(title: "My task", task_list: task_list)
+    assert_alert task_list, kind: :no_tasks, resolved: true
+    task.destroy
+    assert_alert task_list, kind: :no_tasks, resolved: false
+  end
+
+  def test_reraise_condition_can_differ_from_raise_condition
+    # Refund problem alert should only initially raised if returned but not refunded
+    order = Order.create(placed: Date.current - 5.day, returned: false, refunded: true)
+    assert_no_alert order, kind: :refund_problem
+    order.update(returned: true, refunded: false)
+    assert_alert order, kind: :refund_problem, resolved: false
+    order.update(returned: true, refunded: true)
+    assert_alert order, kind: :refund_problem, resolved: true
+
+    # This should not re-raise refund problem alert
+    order.update(refunded: false)
+    assert_alert order, kind: :refund_problem, resolved: true
+
+    # Refund problem alert should only be re-raised if refunded but not returned
+    order.update(returned: false, refunded: true)
+    assert_alert order, kind: :refund_problem, resolved: false
+  end
+
+  private
+
+  def assert_alert(record, kind:, resolved: false)
+    record.scan_for_alerts!
+    assert_class_acts_as_alert record.send("#{kind}_alert").class
+    assert_not record.alerts.where(kind: kind, resolved: resolved).empty?
+  end
+
+  def assert_no_alert(record, kind:)
+    record.scan_for_alerts!
+    assert record.alerts.where(kind: kind).empty?
+    assert_nil record.send("#{kind}_alert")
   end
 end
