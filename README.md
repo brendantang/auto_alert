@@ -54,7 +54,7 @@ $ bundle
 
 `auto_alert` assumes there is an `Alert` model to store your alerts in the database.
 
-An appropriate model can be built using the Rails generator by running something like, `rails generate model Alert alertable:polymorphic resolved:boolean kind:string message:string`.
+An appropriate model can be built using the Rails generator by running something like, `rails generate model Alert alertable:references:polymorphic resolved:boolean kind:string message:string`.
 You may want to edit the resulting migration so that it looks like [this example](test/dummy/db/migrate/20210613222049_create_alerts.rb).
 
 Make sure to edit the alert model file to register it with `auto_alert`:
