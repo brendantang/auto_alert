@@ -33,7 +33,7 @@ module AutoAlert
     def message(alertable)
       if @message_builder.respond_to?(:call)
         @message_builder.call(alertable)
-      elsif alertable.respond_to?(@message_builder)
+      elsif alertable.methods.include?(@message_builder)
         alertable.send(@message_builder)
       else
         @message_builder
