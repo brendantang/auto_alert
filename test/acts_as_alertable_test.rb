@@ -56,12 +56,23 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
   # Message builders
 
   def test_build_alert_message_from_a_string
+    task = Task.create(title: "f", due_date: Date.current)
+    assert_alert task, kind: :short_title
+    assert_equal "title is too short", task.short_title_alert.message
   end
 
   def test_build_alert_message_from_a_lambda
+    date = Date.current - 2.week
+    task = Task.create(title: "f", due_date: date)
+    assert_alert task, kind: :past_due
+    assert_equal "was due #{date}", task.past_due_alert.message
   end
 
   def test_build_alert_message_from_a_method_name
+    date = Date.current - 2.week
+    order = Order.create(placed: date, shipped: false)
+    order.scan_for_alerts!
+    assert_equal "order was placed on #{date} but has not been shipped", order.week_old_alert.message
   end
 
   # Determine whether resolved alerts should be re-raised

@@ -50,9 +50,10 @@ module AutoAlert
     end
 
     def message(alertable)
-      if @message_builder.respond_to?(:call)
-        @message_builder.call(alertable)
-      elsif alertable.methods.include?(@message_builder)
+      case @message_builder
+      in Proc => p
+        p.call(alertable)
+      in Symbol => s if alertable.respond_to?(s, true)
         alertable.send(@message_builder)
       else
         @message_builder
