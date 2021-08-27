@@ -10,10 +10,9 @@ class Task < ApplicationRecord
 
   raises_alert :short_title,
     on: :short_title?,
-    resolve_on: ->(record) { done or !short_title? },
+    resolve_on: ->(record) { record.done or !record.short_title? },
     message: "title is too short"
 
-  private
 
   def short_title?
     title && title.length < 5

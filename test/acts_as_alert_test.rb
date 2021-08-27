@@ -18,11 +18,25 @@ class ActsAsAlertTest < ActiveSupport::TestCase
   end
 
   def test_scopes
-    flunk
+    task = Task.create(title: "my task")
+    unresolved = task.alerts.create(kind: "past_due", resolved: false)
+    resolved = task.alerts.create(kind: "short_title", resolved: true)
+    assert_includes task.alerts.unresolved, unresolved
+    assert_includes Alert.unresolved, unresolved
+    assert_includes task.alerts.resolved, resolved
+    assert_includes Alert.resolved, resolved
+    assert_not_includes task.alerts.unresolved, resolved
+    assert_not_includes task.alerts.resolved, unresolved
   end
 
   def test_scan_all_unresolved
-    flunk
+    task = Task.create(title: "my ", due_date: Date.current)
+    task.scan_for_alerts!
+    assert_alert task, kind: :short_title, resolved: false
+    task.update(title: "should be long enough now")
+    Alert.scan_all_unresolved!
+    assert_alert task, kind: :short_title, resolved: true
+    
   end
 
 end

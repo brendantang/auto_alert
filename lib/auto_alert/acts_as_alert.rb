@@ -23,8 +23,8 @@ module AutoAlert
     end
 
     module SingletonMethods
-      def scan_all_unresolved
-        unresolved.each { |unresolved_alert| scan(unresolved_alert.alertable) }
+      def scan_all_unresolved!
+        unresolved.each { |unresolved_alert| unresolved_alert.alertable.scan_for_alerts! }
       end
     end
   end

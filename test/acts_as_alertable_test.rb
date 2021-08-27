@@ -115,17 +115,4 @@ class ActsAsAlertableTest < ActiveSupport::TestCase
     assert_alert order, kind: :refund_problem, resolved: false
   end
 
-  private
-
-  def assert_alert(record, kind:, resolved: false)
-    record.scan_for_alerts!
-    assert_class_acts_as_alert record.send("#{kind}_alert").class
-    assert_not record.alerts.where(kind: kind, resolved: resolved).empty?
-  end
-
-  def assert_no_alert(record, kind:)
-    record.scan_for_alerts!
-    assert record.alerts.where(kind: kind).empty?
-    assert_nil record.send("#{kind}_alert")
-  end
 end
