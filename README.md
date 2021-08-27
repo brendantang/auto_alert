@@ -109,6 +109,8 @@ class MyModel < ApplicationRecord
 
 For more complicated use cases, especially where alert conditions rely on factors external to the model instance itself, it can make sense to use a [job](https://guides.rubyonrails.org/active_job_basics.html) to asynchronously call `scan_for_alerts!` on big batches of records.
 
+You can also call the class method `scan_all_unresolved!` on your Alert model to check if any unresolved alerts should be resolved. Again, it might be best to use a job to do this periodically in the background.
+
 
 ### Alert records
 

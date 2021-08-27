@@ -5,5 +5,4 @@ require "auto_alert/acts_as_alert"
 require "auto_alert/checker"
 
 module AutoAlert
-  # Your code goes here...
 end
