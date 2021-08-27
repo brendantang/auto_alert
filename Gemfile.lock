@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    auto_alert (0.1.0)
+    auto_alert (0.2.0)
       rails (~> 6.1.3, >= 6.1.3.2)
 
 GEM
@@ -86,8 +86,6 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.12.3-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.12.3-x86_64-linux)
-      racc (~> 1.4)
     pg (1.2.3)
     racc (1.5.2)
     rack (2.2.3)
@@ -144,4 +142,4 @@ DEPENDENCIES
   pg
 
 BUNDLED WITH
-   2.2.16
+   2.2.22
