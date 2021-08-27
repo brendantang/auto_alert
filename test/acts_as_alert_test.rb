@@ -17,4 +17,12 @@ class ActsAsAlertTest < ActiveSupport::TestCase
     assert_includes duplicate.errors.messages.values, ["This Task already has a 'past_due' alert."]
   end
 
+  def test_scopes
+    flunk
+  end
+
+  def test_scan_all_unresolved
+    flunk
+  end
+
 end

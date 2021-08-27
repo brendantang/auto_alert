@@ -6,6 +6,9 @@ module AutoAlert
       # Class method to register a model as alertable
       def acts_as_alert
         belongs_to :alertable, polymorphic: true
+        scope :resolved, -> { where(resolved: true) }
+        scope :unresolved, -> { where(resolved: false) }
+
         validates :kind,
           uniqueness: {
             scope: :alertable,
@@ -20,6 +23,9 @@ module AutoAlert
     end
 
     module SingletonMethods
+      def scan_all_unresolved
+        unresolved.each { |unresolved_alert| scan(unresolved_alert.alertable) }
+      end
     end
   end
 end
